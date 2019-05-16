@@ -1,37 +1,45 @@
 local slider = require("scripts.lib.slider")
 
+-- If you are bundling set "IS_DEV = false"
+local IS_DEV = true
+local mm = nil
 
+-- Master Volume Slider Callback
 local function master_volume(value)
-	print("Callbakc", value)
+	player.master_volume(value)
 end
 
 function init(self)
+	-- Classic stuff
 	profiler.enable_ui(false)
 	msg.post("@render:", "use_fixed_fit_projection", {near = -1, far = 1})
 	msg.post("@render:", "clear_color", {color = vmath.vector4(33 / 255, 33 / 255, 40 / 255, 0)})
 	msg.post(".", "acquire_input_focus")
 
+	-- Add Sliders
+	-- name, node, width, value, callback, type
+	-- TYPE: CENTER = 0/1, BALANCE = -1/+1
+	slider:add("master_volume_slider", "slider", 125, 1.0, master_volume, slider.TYPE.CENTER)
+	slider:add("music_volume_1", "music_volume_1/slider_holder", 125, 1.0, master_volume, slider.TYPE.CENTER)
+	slider:add("music_pitch_1", "music_pitch_1/slider_holder", 125, 1.0, master_volume, slider.TYPE.BALANCE)
+	slider:add("music_volume_2", "music_volume_2/slider_holder", 125, 1.0, master_volume, slider.TYPE.CENTER)
+	slider:add("music_pitch_2", "music_pitch_2/slider_holder", 125, 1.0, master_volume, slider.TYPE.BALANCE)
 
-	slider:add("master_volume_slider", "slider", 125, 1.0,master_volume)
-	slider:add("music_volume_1", "music_volume_1/slider_holder", 125, 0.5,master_volume)
-	slider:add("music_pitch_1", "music_pitch_1/slider_holder", 125, 1.0,master_volume)
-	slider:add("music_volume_2", "music_volume_2/slider_holder", 125, 0.5,master_volume)
-	slider:add("music_pitch_2", "music_pitch_2/slider_holder", 125, 1.0,master_volume)
+	-- TODO: BUTTONS
+
+	-- For building with Defold.
+	-- If you are bundling set "IS_DEV = false"
+	if IS_DEV then
+		player.build_path("/Users/selimanac/Development/Defold/Native Extension/defold-modplayer-examples/res/common")
+	end
+
+	mm = player.load_music("/audio/bb.xm")
+	player.play_music(mm)
 end
 
-function final(self)
-	-- Add finalization code here
-	-- Remove this function if not needed
-end
 
 function update(self, dt)
-	-- Add update code here
-	-- Remove this function if not needed
-end
-
-function on_message(self, message_id, message, sender)
-	-- Add message-handling code here
-	-- Remove this function if not needed
+	-- TODO: Timer updates
 end
 
 
@@ -39,7 +47,3 @@ function on_input(self, action_id, action)
 	slider:check(action_id, action)
 end
 
-function on_reload(self)
-	-- Add input-handling code here
-	-- Remove this function if not needed
-end

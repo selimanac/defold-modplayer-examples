@@ -1,11 +1,20 @@
 slider = {}
 
+slider.TYPE = {
+    CENTER = 2,
+    BALANCE = 1
+}
+
+local limits = {0,0.5}
+
 local sliders = {}
 local count = 0
 local TOUCH = hash("touch")
 local is_draging = false
 local current_slider = {}
 local slider_pos = 0
+local vec3 = vmath.vector3
+local set_position = gui.set_position
 
 local function update(_x)
     slider_pos = ((current_slider.current_x + current_slider.drag_start_x) - _x) * -1
@@ -15,9 +24,9 @@ local function update(_x)
     elseif slider_pos < -current_slider.width then
         slider_pos = -current_slider.width
     end
-    gui.set_position(current_slider.node, vmath.vector3(slider_pos, current_slider.position.y, current_slider.position.z))
+    set_position(current_slider.node, vec3(slider_pos, current_slider.position.y, current_slider.position.z))
     current_slider.position.x = slider_pos
-    current_slider.value = 0.5 + (slider_pos / (current_slider.width * 2))
+    current_slider.value = limits[current_slider.type] + (slider_pos / (current_slider.width * current_slider.type))
     current_slider.callback(current_slider.value)
 end
 
@@ -47,16 +56,16 @@ function slider:check(action_id, action)
     end
 end
 
--- name, node, width, value, callback
-function slider:add(_name, _node, _width, _value, _callback)
+-- name, node, width, value, callback, type
+function slider:add(_name, _node, _width, _value, _callback, _type)
     local temp_table = {}
     local node = gui.get_node(_node)
     local pos = gui.get_position(node)
     local a = _width * _value
-    local b = a - (_width / 2)
+    local b = a - (_width / _type)
     b = b * 2
     pos.x = b
-    gui.set_position(node, vmath.vector3(pos.x, pos.y, pos.z))
+    set_position(node, vmath.vector3(pos.x, pos.y, pos.z))
 
     temp_table = {
         name = master_volume_slider,
@@ -66,7 +75,8 @@ function slider:add(_name, _node, _width, _value, _callback)
         value = _value,
         drag_start_x = pos.x,
         current_x = -pos.x,
-        callback = _callback
+        callback = _callback,
+        type = _type
     }
     table.insert(sliders, temp_table)
     count = #sliders

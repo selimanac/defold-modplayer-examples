@@ -14,6 +14,7 @@ input_method = HiddenInputField
 [project]
 title = defold-modplayer-examples
 version = 0.5
+bundle_resources = /res
 
 [input]
 use_accelerometer = 0

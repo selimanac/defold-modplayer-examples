@@ -1,23 +1,22 @@
-local components = {
-	master_volume_slider = {
-		node = nil,
-		position = vmath.vector3(),
-		drag_start_x = 125 / 2,
-		current_x = 0
-	}
-}
-local is_dragging = false
-local drag_start_x = 0
+local slider = require("scripts.lib.slider")
+
+
+local function master_volume(value)
+	print("Callbakc", value)
+end
 
 function init(self)
 	profiler.enable_ui(false)
 	msg.post("@render:", "use_fixed_fit_projection", {near = -1, far = 1})
 	msg.post("@render:", "clear_color", {color = vmath.vector4(33 / 255, 33 / 255, 40 / 255, 0)})
-
-	components["master_volume_slider"].node = gui.get_node("slider")
-	components["master_volume_slider"].position = gui.get_position(components["master_volume_slider"].node)
-
 	msg.post(".", "acquire_input_focus")
+
+
+	slider:add("master_volume_slider", "slider", 125, 1.0,master_volume)
+	slider:add("music_volume_1", "music_volume_1/slider_holder", 125, 0.5,master_volume)
+	slider:add("music_pitch_1", "music_pitch_1/slider_holder", 125, 1.0,master_volume)
+	slider:add("music_volume_2", "music_volume_2/slider_holder", 125, 0.5,master_volume)
+	slider:add("music_pitch_2", "music_pitch_2/slider_holder", 125, 1.0,master_volume)
 end
 
 function final(self)
@@ -34,39 +33,10 @@ function on_message(self, message_id, message, sender)
 	-- Add message-handling code here
 	-- Remove this function if not needed
 end
-local function start_drag(_x)
-	local value = 0.5
-	local a = 0
 
-	a = ((components["master_volume_slider"].current_x + components["master_volume_slider"].drag_start_x) - _x) * -1
-
-	local g = gui.get_position(components["master_volume_slider"].node)
-	g.x = g.x + a
-	if a > 125 then
-		a = 125
-	elseif a < -125 then
-		a = -125
-	end
-	--pprint(a)
-	local pos = vmath.vector3(a, components["master_volume_slider"].position.y, components["master_volume_slider"].position.z)
-	gui.set_position(components["master_volume_slider"].node, pos)
-	pprint(value + (a / 250))
-end
 
 function on_input(self, action_id, action)
-	if action_id == hash("touch") and gui.pick_node(components["master_volume_slider"].node, action.x, action.y) and action.pressed then
-		pprint(action_id)
-		is_dragging = true
-		components["master_volume_slider"].drag_start_x = action.x
-	elseif action.released then
-		is_dragging = false
-		components["master_volume_slider"].current_x = -gui.get_position(components["master_volume_slider"].node).x
-	end
-
-	if is_dragging then
-		start_drag(action.x)
-	end
-	--pprint(action)
+	slider:check(action_id, action)
 end
 
 function on_reload(self)

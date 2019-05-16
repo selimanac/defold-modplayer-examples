@@ -1,0 +1,42 @@
+images {
+  image: "/assets/gfx/btn_black.png"
+}
+images {
+  image: "/assets/gfx/btn_glow.png"
+}
+images {
+  image: "/assets/gfx/btn_white.png"
+}
+images {
+  image: "/assets/gfx/direction_icon.png"
+}
+images {
+  image: "/assets/gfx/line.png"
+}
+images {
+  image: "/assets/gfx/modplayer_logo.png"
+}
+images {
+  image: "/assets/gfx/pause_icon.png"
+}
+images {
+  image: "/assets/gfx/play_icon.png"
+}
+images {
+  image: "/assets/gfx/slider.png"
+}
+images {
+  image: "/assets/gfx/slider_back.png"
+}
+images {
+  image: "/assets/gfx/stop_icon.png"
+}
+images {
+  image: "/assets/gfx/defold_logo.png"
+}
+images {
+  image: "/assets/gfx/eq_1.png"
+}
+margin: 0
+extrude_borders: 1
+inner_padding: 0

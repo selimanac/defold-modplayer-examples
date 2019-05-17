@@ -1,49 +1,107 @@
 local slider = require("scripts.lib.slider")
+local button = require("scripts.lib.button")
+local progress = require("scripts.lib.progress")
 
 -- If you are bundling set "IS_DEV = false"
 local IS_DEV = true
-local mm = nil
+---------------------------
+
+local TOUCH = hash("touch")
+
+-- Music ids
+local m1 = 0
+local m2 = 0
+
+-- Crossfade
+local crossfade_btn = nil
+local crossfade_shadow = nil
+
+local function music_play(id)
+	player.play_music(id)
+end
+
+local function music_pause(id, is_toggle)
+	if is_toggle == 1 then
+		player.pause_music(id)
+	else
+		player.resume_music(id)
+	end
+end
+
+local function music_stop(id)
+	player.stop_music(id)
+end
+
+-- Music Pitch Slider Callback
+local function music_pitch(value, id)
+	player.music_pitch(id, value)
+end
+
+-- Music Volume Slider Callback
+local function music_volume(value, id)
+	player.music_volume(id, value)
+end
 
 -- Master Volume Slider Callback
-local function master_volume(value)
+local function master_volume(value, id)
 	player.master_volume(value)
 end
 
 function init(self)
-	-- Classic stuff
 	profiler.enable_ui(false)
 	msg.post("@render:", "use_fixed_fit_projection", {near = -1, far = 1})
 	msg.post("@render:", "clear_color", {color = vmath.vector4(33 / 255, 33 / 255, 40 / 255, 0)})
 	msg.post(".", "acquire_input_focus")
 
-	-- Add Sliders
-	-- name, node, width, value, callback, type
-	-- TYPE: CENTER = 0/1, BALANCE = -1/+1
-	slider:add("master_volume_slider", "slider", 125, 1.0, master_volume, slider.TYPE.CENTER)
-	slider:add("music_volume_1", "music_volume_1/slider_holder", 125, 1.0, master_volume, slider.TYPE.CENTER)
-	slider:add("music_pitch_1", "music_pitch_1/slider_holder", 125, 1.0, master_volume, slider.TYPE.BALANCE)
-	slider:add("music_volume_2", "music_volume_2/slider_holder", 125, 1.0, master_volume, slider.TYPE.CENTER)
-	slider:add("music_pitch_2", "music_pitch_2/slider_holder", 125, 1.0, master_volume, slider.TYPE.BALANCE)
-
-	-- TODO: BUTTONS
-
+	--*************************************--
 	-- For building with Defold.
 	-- If you are bundling set "IS_DEV = false"
 	if IS_DEV then
 		player.build_path("/Users/selimanac/Development/Defold/Native Extension/defold-modplayer-examples/res/common")
 	end
+	--*************************************--
 
-	mm = player.load_music("/audio/bb.xm")
-	player.play_music(mm)
+	-- Load music
+	m1 = player.load_music("/audio/bb.xm")
+	m2 = player.load_music("/audio/0insnej.xm")
+
+	-- Sliders
+	slider:add("master_volume_slider", "slider", 125, 0.5, master_volume, slider.TYPE.CENTER, nil)
+	slider:add("music_volume_1", "music_volume_1/slider_holder", 125, 1.0, music_volume, slider.TYPE.CENTER, m1)
+	slider:add("music_pitch_1", "music_pitch_1/slider_holder", 125, 1.0, music_pitch, slider.TYPE.BALANCE, m1)
+	slider:add("music_volume_2", "music_volume_2/slider_holder", 125, 1.0, music_volume, slider.TYPE.CENTER, m2)
+	slider:add("music_pitch_2", "music_pitch_2/slider_holder", 125, 1.0, music_pitch, slider.TYPE.BALANCE, m2)
+
+	-- Buttons
+	button:add("music_play_1", "music_btns_1", "play_btn", "icon", "back", m1, music_play, music_pause, "pause_icon")
+	button:add("music_play_2", "music_btns_2", "play_btn", "icon", "back", m2, music_play, music_pause, "pause_icon")
+	button:add("music_stop_1", "music_btns_1", "stop_btn", "icon1", "back1", m1, music_stop, nil, nil)
+	button:add("music_stop_2", "music_btns_2", "stop_btn", "icon1", "back1", m2, music_stop, nil, nil)
+
+	--Crossfade btn
+	crossfade_btn = gui.get_node("fade_btn")
+	crossfade_shadow = gui.get_node("fade_shadow")
+
+	progress:init(m1, m2)
 end
-
 
 function update(self, dt)
-	-- TODO: Timer updates
+	progress:update(m1, m2)
 end
 
+local function start_fade()
+	gui.animate(crossfade_btn, "scale", 0.9, gui.EASING_OUTBACK, 0.1, 0, nil, gui.PLAYBACK_ONCE_PINGPONG)
+	gui.set_color(crossfade_shadow, vmath.vector4(1,1,0,1))
+	gui.set_color(crossfade_btn, vmath.vector4(1,1,0,1))
+	
+   
+end
 
 function on_input(self, action_id, action)
 	slider:check(action_id, action)
-end
+	button:check(action_id, action)
 
+	if action_id == TOUCH and action.pressed and gui.pick_node(crossfade_btn, action.x, action.y) then
+		start_fade()
+	end
+end

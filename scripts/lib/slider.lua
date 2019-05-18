@@ -5,7 +5,7 @@ slider.TYPE = {
     BALANCE = 1
 }
 
-local limits = {0.99,0.5}
+local limits = {0.99, 0.5}
 
 local sliders = {}
 local count = 0
@@ -15,6 +15,11 @@ local current_slider = {}
 local slider_pos = 0
 local vec3 = vmath.vector3
 local set_position = gui.set_position
+local is_fading = false
+local fading_sliders = {}
+
+local fading_m1 = false
+local fading_m2 = false
 
 local function update(_x)
     slider_pos = ((current_slider.current_x + current_slider.drag_start_x) - _x) * -1
@@ -28,6 +33,20 @@ local function update(_x)
     current_slider.position.x = slider_pos
     current_slider.value = limits[current_slider.type] + (slider_pos / (current_slider.width * current_slider.type))
     current_slider.callback(current_slider.value, current_slider.music_id)
+end
+
+-- Yes, I'm tired now
+local function auto_update(_s, _x)
+    if _s.value >= 0 and _s.value <= 1.0 then
+        set_position(_s.node, vec3(_x, _s.position.y, _s.position.z))
+        _s.position.x = _x
+        _s.value = limits[_s.type] + (_x / (_s.width * _s.type))
+        _s.current_x  = -_x
+        _s.callback(_s.value, _s.music_id)
+        return true
+    else
+        return false
+    end
 end
 
 local function release()
@@ -53,6 +72,36 @@ function slider:check(action_id, action)
 
     if is_draging then
         update(action.x)
+    end
+end
+
+local function get_sliders()
+    for i = 1, count do
+        if sliders[i].name == "music_volume_1" or sliders[i].name == "music_volume_2" then
+            table.insert(fading_sliders, sliders[i])
+        end
+    end
+    is_fading = true
+end
+
+function slider:crossfade()
+    if is_fading == false then
+        get_sliders()
+    end
+    if is_fading then
+        for i = 1, #fading_sliders do
+            if fading_sliders[i].name == "music_volume_1" then
+                fading_m1 = auto_update(fading_sliders[i], fading_sliders[i].position.x - 1)
+            else
+                fading_m2 = auto_update(fading_sliders[i], fading_sliders[i].position.x + 1)
+            end
+        end
+
+        if fading_m1 == false and fading_m2 == false then
+            return false
+        else
+            return true
+        end
     end
 end
 
@@ -82,7 +131,6 @@ function slider:add(_name, _node, _width, _value, _callback, _type, _id)
     _callback(_value, _id)
     table.insert(sliders, temp_table)
     count = #sliders
-    
 end
 
 return slider

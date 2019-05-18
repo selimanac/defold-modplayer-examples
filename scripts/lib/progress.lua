@@ -26,16 +26,19 @@ local function round(x)
 end
 
 function progress:update(m1, m2)
-    m1_elapsed_time = round(player.music_played(m1))
-    m2_elapsed_time = round(player.music_played(m2))
-    set_txt(m1_elapsed_time_txt, m1_elapsed_time)
-    set_txt(m2_elapsed_time_txt, m2_elapsed_time)
+    if player.is_music_playing(m1) then
+        m1_elapsed_time = round(player.music_played(m1))
+        set_txt(m1_elapsed_time_txt, m1_elapsed_time)
+        m1_progress_bar_width = (m1_progress_bar_total_size.x * m1_elapsed_time) / m1_total_time
+        set_size(m1_progress_bar, vec3(m1_progress_bar_width, m1_progress_bar_total_size.y, m1_progress_bar_total_size.z))
+    end
 
-    m1_progress_bar_width = (m1_progress_bar_total_size.x * m1_elapsed_time) / m1_total_time
-    set_size(m1_progress_bar, vec3(m1_progress_bar_width, m1_progress_bar_total_size.y, m1_progress_bar_total_size.z))
-
-    m2_progress_bar_width = (m2_progress_bar_total_size.x * m2_elapsed_time) / m2_total_time
-    set_size(m2_progress_bar, vec3(m2_progress_bar_width, m2_progress_bar_total_size.y, m2_progress_bar_total_size.z))
+    if player.is_music_playing(m2) then
+        m2_elapsed_time = round(player.music_played(m2))
+        set_txt(m2_elapsed_time_txt, m2_elapsed_time)
+        m2_progress_bar_width = (m2_progress_bar_total_size.x * m2_elapsed_time) / m2_total_time
+        set_size(m2_progress_bar, vec3(m2_progress_bar_width, m2_progress_bar_total_size.y, m2_progress_bar_total_size.z))
+    end
 end
 
 function progress:init(m1, m2)
@@ -59,5 +62,7 @@ function progress:init(m1, m2)
     gui.set_size(m1_progress_bar, vmath.vector3(m1_progress_bar_width, m1_progress_bar_total_size.y, m1_progress_bar_total_size.z))
     gui.set_size(m2_progress_bar, vmath.vector3(m2_progress_bar_width, m2_progress_bar_total_size.y, m2_progress_bar_total_size.z))
 end
+
+
 
 return progress

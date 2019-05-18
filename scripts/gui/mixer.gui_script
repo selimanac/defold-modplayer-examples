@@ -15,6 +15,7 @@ local m2 = 0
 -- Crossfade
 local crossfade_btn = nil
 local crossfade_shadow = nil
+local is_fading = false
 
 local function music_play(id)
 	player.play_music(id)
@@ -47,6 +48,22 @@ local function master_volume(value, id)
 	player.master_volume(value)
 end
 
+-- Crossfade
+
+local function stop_fade()
+	gui.animate(crossfade_btn, "scale", 0.9, gui.EASING_OUTBACK, 0.1, 0, nil, gui.PLAYBACK_ONCE_PINGPONG)
+	gui.set_color(crossfade_shadow, vmath.vector4(1, 0, 0, 1))
+	gui.set_color(crossfade_btn, vmath.vector4(1, 0, 0, 1))
+	is_fading = false
+end
+
+local function start_fade()
+	gui.animate(crossfade_btn, "scale", 0.9, gui.EASING_OUTBACK, 0.1, 0, nil, gui.PLAYBACK_ONCE_PINGPONG)
+	gui.set_color(crossfade_shadow, vmath.vector4(1, 1, 0, 1))
+	gui.set_color(crossfade_btn, vmath.vector4(1, 1, 0, 1))
+	is_fading = true
+end
+
 function init(self)
 	profiler.enable_ui(false)
 	msg.post("@render:", "use_fixed_fit_projection", {near = -1, far = 1})
@@ -62,14 +79,14 @@ function init(self)
 	--*************************************--
 
 	-- Load music
-	m1 = player.load_music("/audio/bb.xm")
-	m2 = player.load_music("/audio/0insnej.xm")
+	m1 = player.load_music("/audio/0insnej.xm")
+	m2 = player.load_music("/audio/djb_sdm.xm")
 
 	-- Sliders
 	slider:add("master_volume_slider", "slider", 125, 0.5, master_volume, slider.TYPE.CENTER, nil)
 	slider:add("music_volume_1", "music_volume_1/slider_holder", 125, 1.0, music_volume, slider.TYPE.CENTER, m1)
 	slider:add("music_pitch_1", "music_pitch_1/slider_holder", 125, 1.0, music_pitch, slider.TYPE.BALANCE, m1)
-	slider:add("music_volume_2", "music_volume_2/slider_holder", 125, 1.0, music_volume, slider.TYPE.CENTER, m2)
+	slider:add("music_volume_2", "music_volume_2/slider_holder", 125, 0.5, music_volume, slider.TYPE.CENTER, m2)
 	slider:add("music_pitch_2", "music_pitch_2/slider_holder", 125, 1.0, music_pitch, slider.TYPE.BALANCE, m2)
 
 	-- Buttons
@@ -86,18 +103,22 @@ function init(self)
 end
 
 function update(self, dt)
-	progress:update(m1, m2)
-end
-
-local function start_fade()
-	gui.animate(crossfade_btn, "scale", 0.9, gui.EASING_OUTBACK, 0.1, 0, nil, gui.PLAYBACK_ONCE_PINGPONG)
-	gui.set_color(crossfade_shadow, vmath.vector4(1,1,0,1))
-	gui.set_color(crossfade_btn, vmath.vector4(1,1,0,1))
-	
-   
+	if m1 ~= 0 or m2 ~= 0 then
+		progress:update(m1, m2)
+		if is_fading then
+			is_fading = slider:crossfade(m1, m2)
+			if is_fading == false then
+				print("Call")
+				stop_fade()
+			end
+		end
+	end
 end
 
 function on_input(self, action_id, action)
+	if is_fading then
+		return
+	end
 	slider:check(action_id, action)
 	button:check(action_id, action)
 

@@ -1,5 +1,5 @@
 [bootstrap]
-main_collection = /collections/simpleplayer/simpleplayer.collectionc
+main_collection = /collections/mixer/mixer.collectionc
 
 [script]
 shared_state = 1

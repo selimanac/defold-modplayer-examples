@@ -1,0 +1,161 @@
+local global = require("scripts.globals")
+
+local status_txt = {
+	"STANDBY",
+	"LOADING",
+	"UNLOADING",
+	"READY",
+	"PLAYING",
+	"STOPPED",
+	"PAUSED"
+}
+
+local status = {
+	STANDBY = 1,
+	LOADING = 2,
+	UNLOADING = 3,
+	READY = 4,
+	PLAYING = 5,
+	STOPPED = 6,
+	PAUSED = 7
+}
+
+-- Nodes
+local play_pause_btn_node = nil
+local play_pause_icon_node = nil
+local stop_btn_node = nil
+local status_txt_node = nil
+
+local player_status = status.STANDBY
+local music_file = 0
+
+local files = {
+	song_1 = {
+		node = nil,
+		file = "audio/contraduct_design.xm",
+		status = status.STANDBY
+	},
+	song_2 = {
+		node = nil,
+		file = "audio/emerald.xm",
+		status = status.STANDBY
+	},
+	song_3 = {
+		node = nil,
+		file = "audio/real_men_edit_destructively.xm",
+		status = status.STANDBY
+	},
+	song_4 = {
+		node = nil,
+		file = "audio/ultrabass.mod",
+		status = status.STANDBY
+	},
+	song_5 = {
+		node = nil,
+		file = "audio/vodka_polka_v2.xm",
+		status = status.STANDBY
+	}
+}
+
+local function update_status_txt()
+	local txt = status_txt[player_status]
+	gui.set_text(status_txt_node, txt)
+	print("STATUS: ", txt)
+end
+
+local function toggle_play()
+	pprint(player_status)
+
+	if (player_status == status.READY or player_status == status.STOPPED) and player_status ~= status.PLAYING then
+		print("Play")
+		player.play_music(music_file)
+		player_status = status.PLAYING
+		gui.play_flipbook(play_pause_icon_node, "pause_icon")
+	elseif player_status == status.PLAYING then
+		player.pause_music(music_file)
+		player_status = status.PAUSED
+		gui.play_flipbook(play_pause_icon_node, "play_icon")
+	elseif player_status == status.PAUSED then
+		player.resume_music(music_file)
+		player_status = status.PLAYING
+		gui.play_flipbook(play_pause_icon_node, "pause_icon")
+	end
+
+	update_status_txt()
+end
+
+local function stop()
+	if player.is_music_playing(music_file) then
+		player.stop_music(music_file)
+		player_status = status.STOPPED
+		update_status_txt()
+		gui.play_flipbook(play_pause_icon_node, "play_icon")
+	end
+end
+
+local function change_status(song)
+	if player_status == status.STANDBY then
+		player_status = status.LOADING
+		update_status_txt()
+		music_file = player.load_music(song.file)
+	else
+		stop()
+		player_status = status.UNLOADING
+		update_status_txt()
+		player.unload_music(music_file)
+		player_status = status.STANDBY
+		update_status_txt()
+		change_status(song)
+	end
+
+	player_status = status.READY
+	update_status_txt()
+end
+
+local function setup()
+	status_txt_node = gui.get_node("status_txt")
+	play_pause_btn_node = gui.get_node("template/play_btn")
+	play_pause_icon_node = gui.get_node("template/icon")
+	stop_btn_node = gui.get_node("template/stop_btn")
+
+	for k, v in pairs(files) do
+		v.node = gui.get_node(k .. "/item")
+	end
+end
+
+function init(self)
+	msg.post("@render:", "use_fixed_fit_projection", {near = -1, far = 1})
+	msg.post("@render:", "clear_color", {color = vmath.vector4(33 / 255, 33 / 255, 40 / 255, 0)})
+	msg.post(".", "acquire_input_focus")
+
+		--*************************************--
+	-- For building on Defold Editor.
+	if global.is_dev then
+		if global.build_path == "" then
+			print("WARNING: Build Path is empty.")
+			return
+		end
+		player.build_path(global.build_path)
+	end
+	--*************************************--
+
+	player.master_volume(1.0)
+
+	setup()
+end
+
+function on_input(self, action_id, action)
+	if action_id == global.TOUCH and action.pressed then
+		if gui.pick_node(play_pause_btn_node, action.x, action.y) then
+			toggle_play()
+		elseif gui.pick_node(stop_btn_node, action.x, action.y) then
+			stop()
+		else
+			for k, v in pairs(files) do
+				if gui.pick_node(v.node, action.x, action.y) then
+					change_status(v)
+				end
+			end
+		end
+	end
+end

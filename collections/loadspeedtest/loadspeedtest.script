@@ -1,0 +1,34 @@
+local global = require("scripts.globals")
+
+function init(self)
+	--*************************************--
+	-- For building on Defold Editor.
+	if global.is_dev then
+		if global.build_path == "" then
+			print("WARNING: Build Path is empty.")
+			return
+		end
+		player.build_path(global.build_path)
+	end
+	--*************************************--
+
+	--[[
+
+		MOD vs XM Loading times with same file
+		bb.mod: 284 KB
+		bb.xm: 264 KB
+
+	 ]]
+	local start_time = socket.gettime()
+	local m1 = player.load_music("audio/bb.xm")
+	local end_time = socket.gettime()
+
+	print("XM Time:", end_time - start_time)
+
+	print("----------------------")
+
+	start_time = socket.gettime()
+	local m2 = player.load_music("audio/bb.mod")
+	end_time = socket.gettime()
+	print("MOD Time:", end_time - start_time)
+end

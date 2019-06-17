@@ -1667,7 +1667,7 @@ nodes {
   layer: ""
   inherit_alpha: true
   alpha: 1.0
-  template: "/assets/gui/mixer_slider.gui"
+  template: "/collections/mixer/gui/mixer_slider.gui"
   template_node_child: false
 }
 nodes {
@@ -2720,7 +2720,7 @@ nodes {
   layer: ""
   inherit_alpha: true
   alpha: 1.0
-  template: "/assets/gui/mixer_slider.gui"
+  template: "/collections/mixer/gui/mixer_slider.gui"
   template_node_child: false
 }
 nodes {
@@ -3776,7 +3776,7 @@ nodes {
   layer: ""
   inherit_alpha: true
   alpha: 1.0
-  template: "/assets/gui/mixer_buttons.gui"
+  template: "/collections/mixer/gui/mixer_buttons.gui"
   template_node_child: false
 }
 nodes {
@@ -4199,7 +4199,7 @@ nodes {
   layer: "lines_layer"
   inherit_alpha: true
   alpha: 1.0
-  template: "/assets/gui/timer.gui"
+  template: "/collections/mixer/gui/timer.gui"
   template_node_child: false
 }
 nodes {
@@ -4537,7 +4537,7 @@ nodes {
   layer: ""
   inherit_alpha: true
   alpha: 1.0
-  template: "/assets/gui/mixer_slider.gui"
+  template: "/collections/mixer/gui/mixer_slider.gui"
   template_node_child: false
 }
 nodes {
@@ -5590,7 +5590,7 @@ nodes {
   layer: ""
   inherit_alpha: true
   alpha: 1.0
-  template: "/assets/gui/mixer_slider.gui"
+  template: "/collections/mixer/gui/mixer_slider.gui"
   template_node_child: false
 }
 nodes {
@@ -6646,7 +6646,7 @@ nodes {
   layer: ""
   inherit_alpha: true
   alpha: 1.0
-  template: "/assets/gui/mixer_buttons.gui"
+  template: "/collections/mixer/gui/mixer_buttons.gui"
   template_node_child: false
 }
 nodes {
@@ -7015,7 +7015,7 @@ nodes {
   layer: ""
   inherit_alpha: true
   alpha: 1.0
-  template: "/assets/gui/timer.gui"
+  template: "/collections/mixer/gui/timer.gui"
   template_node_child: false
 }
 nodes {

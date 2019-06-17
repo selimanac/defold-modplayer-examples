@@ -15,7 +15,6 @@ local function toggle_sprite(current_button)
     gui.animate(current_button.icon_node, "scale", 0.8, gui.EASING_OUTBACK, 0.1, 0, nil, gui.PLAYBACK_ONCE_PINGPONG)
     local anim_id = current_button.anims[current_button.status]
     gui.play_flipbook(current_button.icon_node, anim_id)
-
     current_button.second_callback(current_button.music_id, current_button.status)
 end
 
@@ -81,7 +80,6 @@ function button:add(_name, _template, _node, _icon, _back, _id, _callback, _seco
         anims = {anim_0, anim_1}
     }
     table.insert(buttons, temp_table)
-  
     count = #buttons
 end
 

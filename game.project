@@ -1,5 +1,5 @@
 [bootstrap]
-main_collection = /collections/mixer.collectionc
+main_collection = /collections/mixer/mixer.collectionc
 
 [script]
 shared_state = 1
@@ -15,6 +15,7 @@ input_method = HiddenInputField
 title = defold-modplayer-examples
 version = 0.5
 bundle_resources = /res
+dependencies = https://github.com/selimanac/defold-modplayer/archive/master.zip
 
 [input]
 use_accelerometer = 0

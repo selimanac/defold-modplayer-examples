@@ -29,19 +29,19 @@ local function update(_x)
     elseif slider_pos < -current_slider.width then
         slider_pos = -current_slider.width
     end
+
     set_position(current_slider.node, vec3(slider_pos, current_slider.position.y, current_slider.position.z))
     current_slider.position.x = slider_pos
     current_slider.value = limits[current_slider.type] + (slider_pos / (current_slider.width * current_slider.type))
     current_slider.callback(current_slider.value, current_slider.music_id)
 end
 
--- Yes, I'm tired now
 local function auto_update(_s, _x)
     if _s.value >= 0 and _s.value <= 1.0 then
         set_position(_s.node, vec3(_x, _s.position.y, _s.position.z))
         _s.position.x = _x
         _s.value = limits[_s.type] + (_x / (_s.width * _s.type))
-        _s.current_x  = -_x
+        _s.current_x = -_x
         _s.callback(_s.value, _s.music_id)
         return true
     else

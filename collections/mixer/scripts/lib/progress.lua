@@ -17,6 +17,7 @@ local m2_total_time_txt = nil
 local m2_progress_bar = nil
 local m2_progress_bar_width = 1
 local m2_progress_bar_total_size = 0
+
 local vec3 = vmath.vector3
 local set_size = gui.set_size
 local set_txt = gui.set_text

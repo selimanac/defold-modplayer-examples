@@ -1,4 +1,4 @@
-script: "/scripts/gui/mixer.gui_script"
+script: "/collections/mixer/scripts/gui/mixer.gui_script"
 fonts {
   name: "myriad_20"
   font: "/assets/fonts/myriad_20.font"

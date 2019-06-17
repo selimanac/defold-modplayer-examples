@@ -1,6 +1,6 @@
 # Defold Mod Player Examples
 
-Don't forget to set your files path in [scripts/globals.lua](https://github.com/selimanac/defold-modplayer-examples/blob/master/scripts/globals.lua) 
+Don't forget to set your files path in [scripts/globals.lua](https://github.com/selimanac/defold-modplayer-examples/blob/master/scripts/globals.lua) for [player.build_path(full_path:string)](https://github.com/selimanac/defold-modplayer#api)
 
 ```lua
 global = {}

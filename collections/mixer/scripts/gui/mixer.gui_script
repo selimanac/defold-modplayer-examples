@@ -66,10 +66,6 @@ function init(self)
 	--*************************************--
 	-- For building on Defold Editor.
 	if global.is_dev then
-		if global.build_path == "" then
-			print("WARNING: Build Path is empty.")
-			return
-		end
 		player.build_path(global.build_path)
 	end
 	--*************************************--
